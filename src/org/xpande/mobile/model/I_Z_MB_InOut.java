@@ -177,6 +177,21 @@ public interface I_Z_MB_InOut
 	  */
 	public String getJSonBody();
 
+    /** Column name M_InOut_ID */
+    public static final String COLUMNNAME_M_InOut_ID = "M_InOut_ID";
+
+	/** Set Shipment/Receipt.
+	  * Material Shipment Document
+	  */
+	public void setM_InOut_ID(int M_InOut_ID);
+
+	/** Get Shipment/Receipt.
+	  * Material Shipment Document
+	  */
+	public int getM_InOut_ID();
+
+	public I_M_InOut getM_InOut() throws RuntimeException;
+
     /** Column name MovementDate */
     public static final String COLUMNNAME_MovementDate = "MovementDate";
 

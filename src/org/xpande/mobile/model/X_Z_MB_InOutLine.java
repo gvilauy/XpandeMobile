@@ -32,7 +32,7 @@ public class X_Z_MB_InOutLine extends PO implements I_Z_MB_InOutLine, I_Persiste
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20171215L;
+	private static final long serialVersionUID = 20171221L;
 
     /** Standard Constructor */
     public X_Z_MB_InOutLine (Properties ctx, int Z_MB_InOutLine_ID, String trxName)
@@ -186,6 +186,23 @@ public class X_Z_MB_InOutLine extends PO implements I_Z_MB_InOutLine, I_Persiste
 		if (bd == null)
 			 return Env.ZERO;
 		return bd;
+	}
+
+	/** Set UPC/EAN.
+		@param UPC 
+		Bar Code (Universal Product Code or its superset European Article Number)
+	  */
+	public void setUPC (String UPC)
+	{
+		set_Value (COLUMNNAME_UPC, UPC);
+	}
+
+	/** Get UPC/EAN.
+		@return Bar Code (Universal Product Code or its superset European Article Number)
+	  */
+	public String getUPC () 
+	{
+		return (String)get_Value(COLUMNNAME_UPC);
 	}
 
 	public I_Z_MB_InOut getZ_MB_InOut() throws RuntimeException

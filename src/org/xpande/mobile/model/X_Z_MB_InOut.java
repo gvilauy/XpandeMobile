@@ -31,7 +31,7 @@ public class X_Z_MB_InOut extends PO implements I_Z_MB_InOut, I_Persistent
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20171215L;
+	private static final long serialVersionUID = 20171221L;
 
     /** Standard Constructor */
     public X_Z_MB_InOut (Properties ctx, int Z_MB_InOut_ID, String trxName)
@@ -216,6 +216,34 @@ public class X_Z_MB_InOut extends PO implements I_Z_MB_InOut, I_Persistent
 	public String getJSonBody () 
 	{
 		return (String)get_Value(COLUMNNAME_JSonBody);
+	}
+
+	public I_M_InOut getM_InOut() throws RuntimeException
+    {
+		return (I_M_InOut)MTable.get(getCtx(), I_M_InOut.Table_Name)
+			.getPO(getM_InOut_ID(), get_TrxName());	}
+
+	/** Set Shipment/Receipt.
+		@param M_InOut_ID 
+		Material Shipment Document
+	  */
+	public void setM_InOut_ID (int M_InOut_ID)
+	{
+		if (M_InOut_ID < 1) 
+			set_Value (COLUMNNAME_M_InOut_ID, null);
+		else 
+			set_Value (COLUMNNAME_M_InOut_ID, Integer.valueOf(M_InOut_ID));
+	}
+
+	/** Get Shipment/Receipt.
+		@return Material Shipment Document
+	  */
+	public int getM_InOut_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_M_InOut_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
 	}
 
 	/** Set Movement Date.
