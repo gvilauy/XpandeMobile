@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
+ * Proceso que genera recepciones de productos en Adempiere, a partir de datos generados desde un dispositivo móvil.
  * Product: Adempiere ERP & CRM Smart Business Solution. Localization : Uruguay - Xpande
  * Xpande. Created by Gabriel Vila on 12/15/17.
  */
