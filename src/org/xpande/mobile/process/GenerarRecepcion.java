@@ -349,7 +349,8 @@ public class GenerarRecepcion extends SvrProcess {
         org.xpande.retail.model.MProductPricing productPricing = null;
 
         try{
-            productPricing = new MProductPricing(invoiceLine.getM_Product_ID(), invoice.getC_BPartner_ID(), invoice.getAD_Org_ID(),invoiceLine.getQtyEntered(), false, get_TrxName());
+            productPricing = new MProductPricing(invoiceLine.getM_Product_ID(), invoice.getC_BPartner_ID(), invoice.getAD_Org_ID(),
+                    invoice.getDateInvoiced(), invoiceLine.getQtyEntered(), false, get_TrxName());
             productPricing.setM_PriceList_ID(invoice.getM_PriceList_ID());
             productPricing.setPriceDate(invoice.getDateInvoiced());
 
