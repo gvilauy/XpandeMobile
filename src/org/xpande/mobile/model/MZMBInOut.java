@@ -33,7 +33,7 @@ public class MZMBInOut extends X_Z_MB_InOut {
         String whereClause = X_Z_MB_InOut.COLUMNNAME_IsExecuted + " ='N' ";
                 //" AND " + X_Z_MB_InOut.COLUMNNAME_Processing + " ='N' ";
 
-        List<MZMBInOut> lines = new Query(ctx, I_Z_MB_InOut.Table_Name, whereClause, trxName).list();
+        List<MZMBInOut> lines = new Query(ctx, I_Z_MB_InOut.Table_Name, whereClause, trxName).setOrderBy(" Z_MB_InOut_ID ").list();
 
         return lines;
     }
@@ -48,7 +48,7 @@ public class MZMBInOut extends X_Z_MB_InOut {
 
         String whereClause = X_Z_MB_InOutFact.COLUMNNAME_Z_MB_InOut_ID + " =" + this.get_ID();
 
-        List<MZMBInOutFact> lines = new Query(getCtx(), I_Z_MB_InOutFact.Table_Name, whereClause, get_TrxName()).list();
+        List<MZMBInOutFact> lines = new Query(getCtx(), I_Z_MB_InOutFact.Table_Name, whereClause, get_TrxName()).setOrderBy(" Z_MB_InOutFact_ID ").list();
 
         return lines;
     }
