@@ -328,6 +328,8 @@ public class GenerarRecepcion extends SvrProcess {
                         invLine.set_ValueOfColumn("VendorProductNo", inOutLine.get_ValueAsString("VendorProductNo"));
                     }
 
+                    invLine.setM_InOutLine_ID(inOutLine.get_ID());
+
                     invLine.saveEx();
                 }
             }
