@@ -31,7 +31,7 @@ public class X_Z_MB_OrdenDevol extends PO implements I_Z_MB_OrdenDevol, I_Persis
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20180103L;
+	private static final long serialVersionUID = 20180806L;
 
     /** Standard Constructor */
     public X_Z_MB_OrdenDevol (Properties ctx, int Z_MB_OrdenDevol_ID, String trxName)
@@ -40,7 +40,6 @@ public class X_Z_MB_OrdenDevol extends PO implements I_Z_MB_OrdenDevol, I_Persis
       /** if (Z_MB_OrdenDevol_ID == 0)
         {
 			setC_BPartner_ID (0);
-			setDateExecuted (new Timestamp( System.currentTimeMillis() ));
 			setIsExecuted (false);
 // N
 			setIsSOTrx (false);
@@ -217,6 +216,34 @@ public class X_Z_MB_OrdenDevol extends PO implements I_Z_MB_OrdenDevol, I_Persis
 	public String getJSonBody () 
 	{
 		return (String)get_Value(COLUMNNAME_JSonBody);
+	}
+
+	public I_M_InOut getM_InOut() throws RuntimeException
+    {
+		return (I_M_InOut)MTable.get(getCtx(), I_M_InOut.Table_Name)
+			.getPO(getM_InOut_ID(), get_TrxName());	}
+
+	/** Set Shipment/Receipt.
+		@param M_InOut_ID 
+		Material Shipment Document
+	  */
+	public void setM_InOut_ID (int M_InOut_ID)
+	{
+		if (M_InOut_ID < 1) 
+			set_Value (COLUMNNAME_M_InOut_ID, null);
+		else 
+			set_Value (COLUMNNAME_M_InOut_ID, Integer.valueOf(M_InOut_ID));
+	}
+
+	/** Get Shipment/Receipt.
+		@return Material Shipment Document
+	  */
+	public int getM_InOut_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_M_InOut_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
 	}
 
 	/** Set Movement Date.
