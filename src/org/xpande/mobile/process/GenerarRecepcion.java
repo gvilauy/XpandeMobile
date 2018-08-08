@@ -8,6 +8,7 @@ import org.compiere.process.SvrProcess;
 import org.compiere.util.Env;
 import org.compiere.util.TimeUtil;
 import org.xpande.comercial.model.MZComercialConfig;
+import org.xpande.comercial.utils.ComercialUtils;
 import org.xpande.core.model.MZProductoUPC;
 import org.xpande.core.model.MZSocioListaPrecio;
 import org.xpande.mobile.model.MZMBInOut;
@@ -219,10 +220,17 @@ public class GenerarRecepcion extends SvrProcess {
             List<MZRecepcionProdFact> recepcionProdFacts = MZRecepcionProdFact.getByInOut(getCtx(), mInOut.get_ID(), get_TrxName());
             for (MZRecepcionProdFact recepcionProdFact: recepcionProdFacts){
 
+                // Verifico si no existe un comprobante con el mismo: numero, tipo de documento y socio de negocio.
+                // En caso de existir, no genero de nuevo este comprobante.
+                MInvoice invoice = ComercialUtils.getInvoiceByDocPartner(getCtx(), docType.get_ID(), recepcionProdFact.getManualDocumentNo(), mInOut.getC_BPartner_ID(), get_TrxName());
+                if ((invoice != null) && (invoice.get_ID() > 0)){
+                    continue;
+                }
+
                 Timestamp dateInvoiced = TimeUtil.trunc(recepcionProdFact.getDateDoc(), TimeUtil.TRUNC_DAY);
 
                 // Seteo cabezal de nueva factura
-                MInvoice invoice = new MInvoice(mInOut, dateInvoiced);
+                invoice = new MInvoice(mInOut, dateInvoiced);
                 invoice.setDateInvoiced(dateInvoiced);
                 invoice.setDateAcct(fechaHoy);
                 invoice.setC_DocTypeTarget_ID(docType.get_ID());
