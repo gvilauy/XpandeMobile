@@ -159,6 +159,9 @@ public class GenerarDevolucionesProv extends SvrProcess {
                         inOutLine.set_ValueOfColumn("C_Currency_ID", schema.getC_Currency_ID());
                     }
                     inOutLine.setM_Locator_ID(MLocator.getDefault((MWarehouse) inOut.getM_Warehouse()).get_ID());
+
+                    inOutLine.set_ValueOfColumn("DestinoDevol", "NOTACREDITO");
+
                     inOutLine.saveEx();
 
                     if (cCurrencyID == schema.getC_Currency_ID()){
