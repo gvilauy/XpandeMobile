@@ -113,10 +113,14 @@ public class GenerarDevolucionesProv extends SvrProcess {
                         vendorProductCode = productoSocio.getVendorProductNo();
 
                         // Si no tengo precio de ultima factura
-                        if ((productoSocio.getPriceInvoiced() != null) && (productoSocio.getPriceInvoiced().compareTo(Env.ZERO) > 0)){
-                            productoSocio = MZProductoSocio.getByLastInvoice(getCtx(), product.get_ID(), null);
+                        if ((productoSocio.getPriceInvoiced() == null) || (productoSocio.getPriceInvoiced().compareTo(Env.ZERO) <= 0)){
+                            // Si tampoco tengo precio OC
+                            if ((productoSocio.getPricePO() == null) || (productoSocio.getPricePO().compareTo(Env.ZERO) <= 0)){
+                                productoSocio = MZProductoSocio.getByLastInvoice(getCtx(), product.get_ID(), null);
+                            }
                         }
                     }
+
                     // Si no hay facturas, obtengo socio de ultima gestión de precios de proveedor.
                     if ((productoSocio == null) || (productoSocio.get_ID() <= 0)){
                         productoSocio = MZProductoSocio.getByLastPriceOC(getCtx(), product.get_ID(), null);
@@ -124,6 +128,9 @@ public class GenerarDevolucionesProv extends SvrProcess {
 
                     if ((productoSocio != null) && (productoSocio.get_ID() > 0)){
                         priceInvoiced = productoSocio.getPriceInvoiced();
+                        if ((priceInvoiced == null) || (priceInvoiced.compareTo(Env.ZERO) == 0)){
+                            priceInvoiced = productoSocio.getPricePO();
+                        }
                         dateInvoiced = productoSocio.getDateInvoiced();
                         cCurrencyID = productoSocio.getC_Currency_ID();
                         if (productoSocio.getC_Invoice_ID() > 0){
