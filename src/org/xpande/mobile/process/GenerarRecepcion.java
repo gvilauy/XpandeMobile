@@ -17,6 +17,7 @@ import org.xpande.mobile.model.MZMBInOutLine;
 import org.xpande.retail.model.MProductPricing;
 import org.xpande.retail.model.MZProductoSocio;
 import org.xpande.retail.model.MZRecepcionProdFact;
+import org.xpande.retail.model.MZRemitoDifInv;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -266,6 +267,25 @@ public class GenerarRecepcion extends SvrProcess {
                 invoice.set_ValueOfColumn("SubDocBaseType", "RET");
                 invoice.saveEx();
 
+
+                // Instancio cabezal de remito por diferencia de cantidad para esta Recepción-Factura, si luego no tiene monto, lo elimino.
+                BigDecimal totalAmtRemito = Env.ZERO;
+                MZRemitoDifInv remitoDif = null;
+                MDocType[] docTypeRemitoList = MDocType.getOfDocBaseType(getCtx(), "RDC");
+                if (docTypeRemitoList.length <= 0){
+                    throw new AdempiereException("No esta definido el Documento para Remito por Diferencia de Cantidad (RDC)");
+                }
+                MDocType docRemito = docTypeRemitoList[0];
+                remitoDif = new MZRemitoDifInv(getCtx(), 0, get_TrxName());
+                remitoDif.setC_BPartner_ID(invoice.getC_BPartner_ID());
+                remitoDif.setC_Currency_ID(invoice.getC_Currency_ID());
+                remitoDif.setC_DocType_ID(docRemito.get_ID());
+                remitoDif.setC_Invoice_ID(invoice.get_ID());
+                remitoDif.setM_InOut_ID(mInOut.get_ID());
+                remitoDif.setDateDoc(mInOut.getMovementDate());
+                remitoDif.setAD_Org_ID(invoice.getAD_Org_ID());
+                remitoDif.setTotalAmt(Env.ZERO);
+
                 // Seteo lineas de nueva factura según lineas de recepcion
                 List<MInOutLine> inOutLines = recepcionProdFact.getInOutLines();
                 for (MInOutLine inOutLine: inOutLines){
@@ -338,8 +358,26 @@ public class GenerarRecepcion extends SvrProcess {
                     }
 
                     invLine.setM_InOutLine_ID(inOutLine.get_ID());
-
                     invLine.saveEx();
+
+                    // Proceso remito por diferencia de cantidad
+                    BigDecimal amtRemitoLin = remitoDif.setRemitoDiferencia(invoice, invLine, 2, true);
+                    if (amtRemitoLin != null){
+                        totalAmtRemito = totalAmtRemito.add(amtRemitoLin);
+                    }
+                }
+
+                // Si tengo remito por diferencia de cantidades
+                if (totalAmtRemito.compareTo(Env.ZERO) > 0){
+                    remitoDif.setTotalAmt(totalAmtRemito);
+                    if (!remitoDif.processIt(DocAction.ACTION_Complete)){
+                        message = remitoDif.getProcessMsg();
+                        if (message == null){
+                            message = "Error al completar documento de Remito por Diferencia de Cantidad (número: " + remitoDif.getDocumentNo() + " )";
+                        }
+                        return message;
+                    }
+                    remitoDif.saveEx();
                 }
             }
 
