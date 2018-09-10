@@ -134,7 +134,13 @@ public class GenerarDevolucionesProv extends SvrProcess {
                         dateInvoiced = productoSocio.getDateInvoiced();
                         cCurrencyID = productoSocio.getC_Currency_ID();
                         if (productoSocio.getC_Invoice_ID() > 0){
-                            documentNoRef = ((MInvoice) productoSocio.getC_Invoice()).getDocumentNo();
+                            MInvoice invoiceRef = (MInvoice) productoSocio.getC_Invoice();
+                            if (invoiceRef != null){
+                                documentNoRef = invoiceRef.getDocumentNo();
+                            }
+                            else{
+                                documentNoRef = "";
+                            }
                         }
                     }
 

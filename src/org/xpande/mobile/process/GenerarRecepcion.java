@@ -14,10 +14,8 @@ import org.xpande.core.model.MZSocioListaPrecio;
 import org.xpande.mobile.model.MZMBInOut;
 import org.xpande.mobile.model.MZMBInOutFact;
 import org.xpande.mobile.model.MZMBInOutLine;
+import org.xpande.retail.model.*;
 import org.xpande.retail.model.MProductPricing;
-import org.xpande.retail.model.MZProductoSocio;
-import org.xpande.retail.model.MZRecepcionProdFact;
-import org.xpande.retail.model.MZRemitoDifInv;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -206,6 +204,9 @@ public class GenerarRecepcion extends SvrProcess {
 
         try{
 
+            // Configuración de Retail
+            MZRetailConfig retailConfig = MZRetailConfig.getDefault(getCtx(), get_TrxName());
+
             // Obtengo documento a utilizar para generar facturas del proveedor recibidas
             MDocType docType = new MDocType(getCtx(), cDocTypeID, null);
             if ((docType == null) || (docType.get_ID() <= 0)){
@@ -271,11 +272,16 @@ public class GenerarRecepcion extends SvrProcess {
                 // Instancio cabezal de remito por diferencia de cantidad para esta Recepción-Factura, si luego no tiene monto, lo elimino.
                 BigDecimal totalAmtRemito = Env.ZERO;
                 MZRemitoDifInv remitoDif = null;
-                MDocType[] docTypeRemitoList = MDocType.getOfDocBaseType(getCtx(), "RDC");
-                if (docTypeRemitoList.length <= 0){
+
+                if (retailConfig.getDefDocRemDifCant_ID() <= 0){
+                    throw new AdempiereException("No esta definido el Documento para Remito por Diferencia de Cantidad (RDC) en la Configuración de Retail.");
+                }
+
+                MDocType docRemito = new MDocType(getCtx(), retailConfig.getDefDocRemDifCant_ID(), null);
+                if ((docRemito == null) || (docRemito.get_ID() <= 0)){
                     throw new AdempiereException("No esta definido el Documento para Remito por Diferencia de Cantidad (RDC)");
                 }
-                MDocType docRemito = docTypeRemitoList[0];
+
                 remitoDif = new MZRemitoDifInv(getCtx(), 0, get_TrxName());
                 remitoDif.setC_BPartner_ID(invoice.getC_BPartner_ID());
                 remitoDif.setC_Currency_ID(invoice.getC_Currency_ID());
