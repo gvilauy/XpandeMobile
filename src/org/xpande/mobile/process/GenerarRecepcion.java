@@ -95,7 +95,14 @@ public class GenerarRecepcion extends SvrProcess {
                     recepcionProdFact.setM_InOut_ID(inOut.get_ID());
                     recepcionProdFact.setC_Currency_ID(mzmbInOutFact.getC_Currency_ID());
                     recepcionProdFact.setDateDoc(mzmbInOutFact.getDateInvoiced());
-                    recepcionProdFact.setDocumentSerie(mzmbInOutFact.getDocumentSerie());
+
+                    String serieDoc = mzmbInOutFact.getDocumentSerie();
+                    if (serieDoc != null){
+                        serieDoc = serieDoc.trim().toUpperCase();
+                        serieDoc = serieDoc.replace(" ","");
+                    }
+
+                    recepcionProdFact.setDocumentSerie(serieDoc);
                     recepcionProdFact.setManualDocumentNo(mzmbInOutFact.getDocumentNoRef());
                     recepcionProdFact.saveEx();
 
