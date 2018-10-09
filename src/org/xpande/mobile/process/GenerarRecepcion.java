@@ -5,6 +5,7 @@ import org.compiere.acct.Doc;
 import org.compiere.model.*;
 import org.compiere.process.DocAction;
 import org.compiere.process.SvrProcess;
+import org.compiere.util.DB;
 import org.compiere.util.Env;
 import org.compiere.util.TimeUtil;
 import org.xpande.comercial.model.MZComercialConfig;
@@ -209,6 +210,7 @@ public class GenerarRecepcion extends SvrProcess {
 
         String message = null;
         boolean tieneConstancia = false;
+        String action = "";
 
         try{
 
@@ -276,6 +278,10 @@ public class GenerarRecepcion extends SvrProcess {
                 invoice.set_ValueOfColumn("SubDocBaseType", "RET");
                 invoice.saveEx();
 
+                // Dejo asociada la invoice creada con la relación de factura - inout
+                action = " update z_recepcionprodfact set c_invoice_id =" + invoice.get_ID() +
+                        " where z_recepcionprodfact_id =" + recepcionProdFact.get_ID();
+                DB.executeUpdateEx(action, get_TrxName());
 
                 // Instancio cabezal de remito por diferencia de cantidad para esta Recepción-Factura, si luego no tiene monto, lo elimino.
                 BigDecimal totalAmtRemito = Env.ZERO;
