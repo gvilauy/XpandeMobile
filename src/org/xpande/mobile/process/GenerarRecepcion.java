@@ -15,6 +15,7 @@ import org.xpande.core.model.MZSocioListaPrecio;
 import org.xpande.mobile.model.MZMBInOut;
 import org.xpande.mobile.model.MZMBInOutFact;
 import org.xpande.mobile.model.MZMBInOutLine;
+import org.xpande.mobile.model.MZMBInOutUPC;
 import org.xpande.retail.model.*;
 import org.xpande.retail.model.MProductPricing;
 
@@ -113,6 +114,19 @@ public class GenerarRecepcion extends SvrProcess {
 
                 int lineNo = 0;
 
+                // Recorro codigos de barra recibidos en esta rececpión móvil y asocio aquellos que son nuevos a sus respectivos productos.
+                List<MZMBInOutUPC> inOutUPCList = mzmbInOut.getUPCs();
+                for (MZMBInOutUPC inOutUPC: inOutUPCList){
+                    MZProductoUPC productoUPC = MZProductoUPC.getByUPC(this.getCtx(), inOutUPC.getUPC().trim(), this.get_TrxName());
+                    if ((productoUPC == null) || (productoUPC.get_ID() <=0)){
+                        productoUPC = new MZProductoUPC(getCtx(), 0, get_TrxName());
+                        productoUPC.setAD_Org_ID(0);
+                        productoUPC.setM_Product_ID(inOutUPC.getM_Product_ID());
+                        productoUPC.setUPC(inOutUPC.getUPC().trim());
+                        productoUPC.saveEx();
+                    }
+                }
+
                 // Genero lineas de recepcion en Adempiere
                 List<MZMBInOutLine> mzmbInOutLineList = mzmbInOut.getLines();
                 for (MZMBInOutLine mzmbInOutLine: mzmbInOutLineList){
@@ -160,28 +174,31 @@ public class GenerarRecepcion extends SvrProcess {
 
                 }
 
-                // Completo recepcion en Adempiere
-                if (!inOut.processIt(DocAction.ACTION_Complete)){
-                    mzmbInOut.setErrorMsg("No se pudo Completar Recepcion " + inOut.getDocumentNo() + " : " + inOut.getProcessMsg());
-                    mzmbInOut.setProcessing(false);
-                    mzmbInOut.saveEx();
+                // Completo recepcion en Adempiere y genero facturas en borrador, si asi esta parametrizado en la ventana de Configuración Comercial
+                if (comercialConfig.isCompletaRecepcion()){
+                    if (!inOut.processIt(DocAction.ACTION_Complete)){
+                        mzmbInOut.setErrorMsg("No se pudo Completar Recepcion " + inOut.getDocumentNo() + " : " + inOut.getProcessMsg());
+                        mzmbInOut.setProcessing(false);
+                        mzmbInOut.saveEx();
 
-                    inOut.deleteEx(true);
+                        inOut.deleteEx(true);
 
-                    continue;
-                }
-                inOut.saveEx();
+                        continue;
+                    }
 
-                // Genero facturas en borrador para asociadas a esta recepción
-                String message = this.generarFacturas(inOut, comercialConfig.getDefaultDocAPI_ID());
+                    inOut.saveEx();
 
-                if (message != null){
-                    mzmbInOut.setErrorMsg("No se pudo Generar Facturas desde Recepcion " + inOut.getDocumentNo() + " : " + message);
-                    mzmbInOut.setProcessing(false);
-                    mzmbInOut.setIsExecuted(true); // Esto para que no siga generando recepción
-                    mzmbInOut.setM_InOut_ID(inOut.get_ID());
-                    mzmbInOut.saveEx();
-                    continue;
+                    // Genero facturas en borrador para asociadas a esta recepción
+                    String message = this.generarFacturas(inOut, comercialConfig.getDefaultDocAPI_ID());
+
+                    if (message != null){
+                        mzmbInOut.setErrorMsg("No se pudo Generar Facturas desde Recepcion " + inOut.getDocumentNo() + " : " + message);
+                        mzmbInOut.setProcessing(false);
+                        mzmbInOut.setIsExecuted(true); // Esto para que no siga generando recepción
+                        mzmbInOut.setM_InOut_ID(inOut.get_ID());
+                        mzmbInOut.saveEx();
+                        continue;
+                    }
                 }
 
                 // Marco recepción móvil como procesada

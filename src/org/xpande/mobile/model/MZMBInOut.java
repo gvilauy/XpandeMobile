@@ -69,4 +69,18 @@ public class MZMBInOut extends X_Z_MB_InOut {
     }
 
 
+    /***
+     * Obtiene y retorna lineas asociadas a esta recepcion movil.
+     * Xpande. Created by Gabriel Vila on 12/15/17.
+     * @return
+     */
+    public List<MZMBInOutUPC> getUPCs(){
+
+        String whereClause = X_Z_MB_InOutUPC.COLUMNNAME_Z_MB_InOut_ID + " =" + this.get_ID();
+
+        List<MZMBInOutUPC> lines = new Query(getCtx(), I_Z_MB_InOutUPC.Table_Name, whereClause, get_TrxName()).list();
+
+        return lines;
+    }
+
 }
