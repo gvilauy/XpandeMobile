@@ -251,7 +251,8 @@ public class GenerarRecepcion extends SvrProcess {
 
                 // Verifico si no existe un comprobante con el mismo: numero, tipo de documento y socio de negocio.
                 // En caso de existir, no genero de nuevo este comprobante.
-                MInvoice invoice = ComercialUtils.getInvoiceByDocPartner(getCtx(), docType.get_ID(), recepcionProdFact.getDocumentSerie(), recepcionProdFact.getManualDocumentNo(), mInOut.getC_BPartner_ID(), get_TrxName());
+                MInvoice invoice = ComercialUtils.getInvoiceByDocPartner(getCtx(), mInOut.getAD_Org_ID(), docType.get_ID(),
+                        recepcionProdFact.getDocumentSerie(), recepcionProdFact.getManualDocumentNo(), mInOut.getC_BPartner_ID(), get_TrxName());
                 if ((invoice != null) && (invoice.get_ID() > 0)){
                     continue;
                 }
