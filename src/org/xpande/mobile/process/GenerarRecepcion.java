@@ -83,6 +83,7 @@ public class GenerarRecepcion extends SvrProcess {
                 inOut.setFreightCostRule(X_M_InOut.FREIGHTCOSTRULE_FreightIncluded);
                 inOut.setDeliveryViaRule(X_M_InOut.DELIVERYVIARULE_Pickup);
                 inOut.setPriorityRule(X_M_InOut.PRIORITYRULE_Medium);
+                inOut.set_ValueOfColumn("Z_MB_InOut_ID", mzmbInOut.get_ID());
                 inOut.saveEx();
 
                 HashMap<String, Integer> hashFacturasAsociadas = new HashMap<String, Integer>();
@@ -142,6 +143,14 @@ public class GenerarRecepcion extends SvrProcess {
                     inOutLine.setC_UOM_ID(product.getC_UOM_ID());
                     inOutLine.setMovementQty(mzmbInOutLine.getMovementQty());
                     inOutLine.setQtyEntered(mzmbInOutLine.getMovementQty());
+
+                    if (hashFacturasAsociadas.get(mzmbInOutLine.getDocumentNoRef()) == null){
+                        mzmbInOut.setErrorMsg("Falta indicar numero de factura recibida.");
+                        mzmbInOut.setProcessing(false);
+                        mzmbInOut.saveEx();
+                        continue;
+                    }
+
                     inOutLine.set_ValueOfColumn("Z_RecepcionProdFact_ID", hashFacturasAsociadas.get(mzmbInOutLine.getDocumentNoRef()).intValue());
                     inOutLine.set_ValueOfColumn("QtyEnteredInvoice", mzmbInOutLine.getQtyInvoiced());
 
