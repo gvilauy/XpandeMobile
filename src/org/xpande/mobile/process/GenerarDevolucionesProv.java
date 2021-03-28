@@ -7,6 +7,7 @@ import org.compiere.process.SvrProcess;
 import org.compiere.util.Env;
 import org.compiere.util.TimeUtil;
 import org.xpande.comercial.model.MZComercialConfig;
+import org.xpande.comercial.model.MZMotivoDevol;
 import org.xpande.comercial.model.MZOrdenDevolucion;
 import org.xpande.comercial.model.MZOrdenDevolucionLin;
 import org.xpande.core.model.MZProductoUPC;
@@ -174,6 +175,16 @@ public class GenerarDevolucionesProv extends SvrProcess {
                     inOutLine.setM_Locator_ID(MLocator.getDefault((MWarehouse) inOut.getM_Warehouse()).get_ID());
 
                     inOutLine.set_ValueOfColumn("DestinoDevol", "NOTACREDITO");
+
+                    // Si tengo codigo de motivo de devolucion
+                    String codMotivoDevol = inOutLine.get_ValueAsString("CodMotivoDevol");
+                    if ((codMotivoDevol != null) && (!codMotivoDevol.trim().equalsIgnoreCase(""))){
+                        // Si este código lo tengo en la tabla de motivos, guardo el ID en la inoutline.
+                        MZMotivoDevol motivoDevol = MZMotivoDevol.getByValue(getCtx(), codMotivoDevol, null);
+                        if ((motivoDevol != null) && (motivoDevol.get_ID() > 0)){
+                            inOutLine.set_ValueOfColumn("Z_MotivoDevol_ID", motivoDevol.get_ID());
+                        }
+                    }
 
                     inOutLine.saveEx();
 
