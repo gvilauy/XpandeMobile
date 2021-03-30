@@ -52,6 +52,9 @@ public class GenerarRecepcion extends SvrProcess {
                 mzmbInOut.saveEx();
 
                 MWarehouse[] warehouses = MWarehouse.getForOrg(getCtx(), mzmbInOut.getAD_Org_ID());
+                if (warehouses.length <= 0){
+                    continue;
+                }
                 MWarehouse warehouse = warehouses[0];
                 MLocator locator = MLocator.getDefault(warehouse);
 
