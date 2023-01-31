@@ -140,6 +140,7 @@ public class GenerarRecepcion extends SvrProcess {
                     MProduct product = new MProduct(getCtx(), mzmbInOutLine.getM_Product_ID(), null);
 
                     MInOutLine inOutLine = new MInOutLine(inOut);
+                    inOutLine.setAD_Org_ID(inOutLine.getAD_Org_ID());
                     inOutLine.setLine(lineNo);
                     inOutLine.setM_Locator_ID(locator.get_ID());
                     inOutLine.setM_Product_ID(mzmbInOutLine.getM_Product_ID());
@@ -273,6 +274,7 @@ public class GenerarRecepcion extends SvrProcess {
 
                 // Seteo cabezal de nueva factura
                 invoice = new MInvoice(mInOut, dateInvoiced);
+                invoice.setAD_Org_ID(mInOut.getAD_Org_ID());
                 invoice.setDateInvoiced(dateInvoiced);
                 invoice.setDateAcct(fechaHoy);
                 invoice.setC_DocTypeTarget_ID(docType.get_ID());
@@ -327,6 +329,7 @@ public class GenerarRecepcion extends SvrProcess {
                 }
 
                 remitoDif = new MZRemitoDifInv(getCtx(), 0, get_TrxName());
+                remitoDif.setAD_Org_ID(invoice.getAD_Org_ID());
                 remitoDif.setC_BPartner_ID(invoice.getC_BPartner_ID());
                 remitoDif.setC_Currency_ID(invoice.getC_Currency_ID());
                 remitoDif.setC_DocType_ID(docRemito.get_ID());
@@ -341,7 +344,7 @@ public class GenerarRecepcion extends SvrProcess {
                 for (MInOutLine inOutLine: inOutLines){
 
                     MInvoiceLine invLine = new MInvoiceLine(invoice);
-
+                    invLine.setAD_Org_ID(invoice.getAD_Org_ID());
                     invLine.setC_Invoice_ID(invoice.get_ID());
                     invLine.setM_Product_ID(inOutLine.getM_Product_ID());
                     invLine.setC_UOM_ID(inOutLine.getC_UOM_ID());
